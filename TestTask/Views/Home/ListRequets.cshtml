@@ -1,0 +1,32 @@
+﻿@model IEnumerable<TestTask.Models.RequestSite>
+
+@{
+    ViewBag.Title = "List of all queries";
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading">List of all queries</div>
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SiteName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RequetsTime)
+            </th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SiteName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RequetsTime)
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>

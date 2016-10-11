@@ -1,0 +1,93 @@
+﻿@model TestTask.Models.RequestSite
+
+@{
+    ViewBag.Title = "Requests to sitemap";
+}
+
+<div class="row">
+    <div class="col-md-2 col-md-push-2 slowest">
+        <h4>Slowest request: @ViewBag.MaxTime ms</h4>
+    </div>
+    <div id="chart_div" class="col-md-6 col-md-push-4"></div>
+</div>
+
+
+
+<div class="row">
+    <div  class="form-group">
+        <div class="col-md-12">
+            @using (Ajax.BeginForm("Index", new AjaxOptions
+            {
+                UpdateTargetId = "tbl",
+                HttpMethod = "POST",
+                InsertionMode = InsertionMode.InsertAfter
+            }))
+            {
+                <div class="col-md-5 col-md-push-3">
+                    @Html.EditorFor(model => model.SiteName, new { htmlAttributes = new { @class = "form-control", @Value = "" } })
+                    @Html.ValidationMessageFor(model => model.SiteName, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-4 col-md-push-3">
+                    <input type="submit" value="Отправить" class="btn btn-default btm_comment" />
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div id="tbl" class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Current request</div>
+            <table class="table">
+                <tr>
+                    <th>Site</th>
+                    <th>Current request time/ms</th>
+                    <th>Min request time/ms</th>
+                    <th>Max request time/ms</th>
+                </tr>
+                <tr>
+                    <td>@Html.DisplayFor(model => model.SiteName)</td>
+                    <td>@Html.DisplayFor(model=> model.RequetsTime)</td>
+                    <td>@ViewBag.MinForPage </td>
+                    <td>@ViewBag.MaxForPage</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+         google.load('visualization', '1.0', { 'packages': ['corechart'] });
+   
+         google.setOnLoadCallback(drawChart);
+   
+         function drawChart() {
+   
+            var options = {
+                'title': 'Sites',
+                'width': 500,
+                'height': 200
+            };
+  
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'SiteName');
+            data.addColumn('number', 'RequetsTime');
+  
+            $.getJSON('@Url.Action("GetSites", "Home")', null,
+                                                        function (result) {
+                if (result.SitesList.length) {
+                    $.each(result.SitesList, function (index, c) {
+                        data.addRow(
+                            [c.SiteName, c.RequetsTime]
+                        );
+                    });
+                    var chart = new google.visualization.AreaChart(
+                                       document.getElementById('chart_div'));
+                    chart.draw(data, options);
+                };
+            });
+        }
+    </script>
